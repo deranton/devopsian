@@ -1,0 +1,52 @@
+machine:
+  services:
+    - docker
+    - mysql
+  environment:
+    SVC_ENV: test
+    HOMEPATH: $HOME/$CIRCLE_PROJECT_REPONAME
+    DEVOPSPATH: $HOME/.go_workspace/src/github.com/$CIRCLE_PROJECT_USERNAME
+    SRCPATH: $DEVOPSPATH/$CIRCLE_PROJECT_REPONAME
+    PATH: PATH=/data/myscripts:$HOME/go_appengine:$PATH
+
+dependencies:
+  pre:
+    - wget http://www.harding.motd.ca/autossh/autossh-1.4e.tgz
+    - gunzip -c autossh-1.4e.tgz | tar xvf -
+    - cd autossh-1.4e && ./configure
+    - cd autossh-1.4e && make
+    - cd autossh-1.4e && sudo make install
+    - sudo add-apt-repository ppa:masterminds/glide -y
+    - sudo apt-get update
+    - sudo apt-get install glide -y
+    - sudo apt-get install mercurial
+    - curl -o $HOME/google_appengine_1.9.48.zip https://storage.googleapis.com/appengine-sdks/featured/go_appengine_sdk_linux_amd64-1.9.48.zip
+    - sudo unzip -q -d  $HOME $HOME/google_appengine_1.9.48.zip
+    - "echo create database IF NOT EXISTS devopsian_test | mysql -u root"
+    - mkdir $DEVOPSPATH -p
+    - echo $PATH
+  override:
+    - rsync -av $HOMEPATH $DEVOPSPATH  
+    - cd $SRCPATH && glide install
+
+compile:
+  pre:
+    - "cd $SRCPATH && go get github.com/rubenv/sql-migrate/..."
+    - "cd $SRCPATH && git clean -n && git clean -f"
+    
+  override:
+    - "cd $SRCPATH/cmd/server && make test"
+
+test:
+  override:
+    - echo "Tests are currently in the compile section. This is to prevent the deployment section getting triggered with failing tests. https://circleci.com/docs/1.0/configuration/#phases"
+
+deployment:
+  dev:
+    branch: dev
+    commands:
+      - cd $SRCPATH/cmd/server && python deploy.py development
+  staging:
+    branch: staging
+    commands:
+      - cd $SRCPATH/cmd/server && python deploy.py staging
