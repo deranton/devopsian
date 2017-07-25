@@ -50,3 +50,7 @@ deployment:
     branch: staging
     commands:
       - cd $SRCPATH/cmd/server && python deploy.py staging
+  # test:
+    # branch: test
+    # commands:
+      #- cd $SRCPATH/cmd/server && python deploy.py test
