@@ -11,23 +11,23 @@ machine:
 
 dependencies:
   pre:
-    - wget http://www.harding.motd.ca/autossh/autossh-1.4e.tgz
-    - gunzip -c autossh-1.4e.tgz | tar xvf -
-    - cd autossh-1.4e && ./configure
-    - cd autossh-1.4e && make
-    - cd autossh-1.4e && sudo make install
-    - sudo add-apt-repository ppa:masterminds/glide -y
+    # - wget http://www.harding.motd.ca/autossh/autossh-1.4e.tgz
+    # - gunzip -c autossh-1.4e.tgz | tar xvf -
+    # - cd autossh-1.4e && ./configure
+    # - cd autossh-1.4e && make
+    # - cd autossh-1.4e && sudo make install
+    # - sudo add-apt-repository ppa:masterminds/glide -y
     - sudo apt-get update
-    - sudo apt-get install glide -y
-    - sudo apt-get install mercurial
+    # - sudo apt-get install glide -y
+    # - sudo apt-get install mercurial
     - curl -o $HOME/google_appengine_1.9.48.zip https://storage.googleapis.com/appengine-sdks/featured/go_appengine_sdk_linux_amd64-1.9.48.zip
     - sudo unzip -q -d  $HOME $HOME/google_appengine_1.9.48.zip
-    - "echo create database IF NOT EXISTS devopsian_test | mysql -u root"
+    # - "echo create database IF NOT EXISTS devopsian_test | mysql -u root"
     - mkdir $DEVOPSPATH -p
     - echo $PATH
   override:
     - rsync -av $HOMEPATH $DEVOPSPATH  
-    - cd $SRCPATH && glide install
+    # - cd $SRCPATH && glide install
 
 compile:
   pre:
@@ -35,7 +35,7 @@ compile:
     - "cd $SRCPATH && git clean -n && git clean -f"
     
   override:
-    - "cd $SRCPATH/cmd/server && make test"
+  #  - "cd $SRCPATH/cmd/server && make test"
 
 test:
   override:
